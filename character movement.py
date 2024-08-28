@@ -13,18 +13,18 @@ pygame.display.set_caption("Character Movement")
 background_image = pygame.image.load("background.png")
 
 # Load standing image
-character_standing = pygame.image.load("character_standing.png")
+character_standing = pygame.image.load("character/character_standing.png")
 
 # Load right key animation frames from PNG
-gif_forward = ["GameWalk1.png", "GameWalk2.png",]  # List of PNG files
+gif_forward = ["character/GameWalk1.png", "character/GameWalk2.png",]  # List of PNG files
 video_frames_forward = [pygame.image.load(file).convert_alpha() for file in gif_forward]
 
 # Load left key animation frames from PNG
-gif_backward = ["GameWalkLeft1.png", "GameWalkLeft2.png",]  # List of PNG files
+gif_backward = ["character/GameWalkLeft1.png", "character/GameWalkLeft2.png",]  # List of PNG files
 video_frames_backward = [pygame.image.load(file).convert_alpha() for file in gif_backward]
 
 # Character properties
-character_rect = character_standing.get_rect(bottomleft=(0, screen_height - 50))  # Start from the far left bottom
+character_rect = character_standing.get_rect(bottomleft=(400, 660))  # Set initial position to (400, 100)
 velocity = 5
 frame_index_forward = 0
 frame_index_backward = 0
