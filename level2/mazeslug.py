@@ -50,6 +50,10 @@ current_frame = 0
 animation_timer = 0
 animation_speed = 10  # Speed of the animation frames
 
+# Bullet settings
+bullets = []
+bullet_velocity = 10
+
 # Maze layout with different platform types and traps
 maze_layout = [
     "0000000000000000000000000",
@@ -150,11 +154,11 @@ while True:
     keys = pygame.key.get_pressed()
 
     # Horizontal movement
-    if keys[pygame.K_LEFT] and player_pos[0] > player_velocity:
+    if keys[pygame.K_a] and player_pos[0] > player_velocity:
         player_pos[0] -= player_velocity
         offset_x += player_velocity * 0.5  # Move platforms right
         current_frame += 1  # Animate running left
-    elif keys[pygame.K_RIGHT] and player_pos[0] < SCREEN_WIDTH - player_size - player_velocity:
+    elif keys[pygame.K_d] and player_pos[0] < SCREEN_WIDTH - player_size - player_velocity:
         player_pos[0] += player_velocity
         offset_x -= player_velocity * 0.5  # Move platforms left
         current_frame += 1  # Animate running right
@@ -166,18 +170,27 @@ while True:
     player_pos[1] += player_y_velocity  # Update player position by velocity
 
     # Jump logic
-    if not is_jumping and keys[pygame.K_SPACE] and on_ground:  # Only jump if on ground
+    if not is_jumping and keys[pygame.K_w] and on_ground:  # Only jump if on ground
         is_jumping = True
         player_y_velocity = -14  # Set the initial upward velocity for the jump
         on_ground = False  # Player is no longer on the ground
+
+    # Shooting logic
+    if keys[pygame.K_SPACE]:
+        bullet_rect = pygame.Rect(player_pos[0] + player_size // 2 - 5, player_pos[1] + 20, 10, 5)
+        bullets.append(bullet_rect)
+
+    # Update bullets
+    for bullet in bullets:
+        bullet.x += bullet_velocity  # Move bullet to the right
 
     # Handle jumping animation
     if is_jumping:
         current_frame += 1  # Animate jumping
     else:
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             frame_index = current_frame // animation_speed % len(run_left_frames)
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             frame_index = current_frame // animation_speed % len(run_right_frames)
         else:
             frame_index = 0  # Reset frame when not moving
@@ -249,14 +262,18 @@ while True:
         frame_index = min(len(jump_frames) - 1, current_frame // animation_speed)
         screen.blit(jump_frames[frame_index], (player_pos[0], player_pos[1]))
     else:
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             frame_index = current_frame // animation_speed % len(run_left_frames)
             screen.blit(run_left_frames[frame_index], (player_pos[0], player_pos[1]))
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             frame_index = current_frame // animation_speed % len(run_right_frames)
             screen.blit(run_right_frames[frame_index], (player_pos[0], player_pos[1]))
         else:
             screen.blit(run_right_frames[0], (player_pos[0], player_pos[1]))  # Idle frame
+
+    # Draw bullets
+    for bullet in bullets:
+        pygame.draw.rect(screen, GREEN, bullet)  # Draw the bullet
 
     # Draw hidden trap (if active)
     if hidden_trap_active:
